@@ -1,0 +1,321 @@
+---Stored Procedure---
+MariaDB [mytestdb]> delimiter //
+MariaDB [mytestdb]> CREATE PROCEDURE sp_first()
+    -> BEGIN
+    -> SELECT * FROM products;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.05 sec)
+
+MariaDB [mytestdb]> CALL sp_first;
+    -> //
++------+-----------------+-------+--------------+
+| Code | Name            | Price | Manufacturer |
++------+-----------------+-------+--------------+
+|    0 | i phone 7s      |     0 |         NULL |
+|    1 | Hard drive      |   240 |            5 |
+|    2 | Memory          |   120 |            6 |
+|    3 | ZIP drive       |   150 |            4 |
+|    4 | Floppy disk     |     5 |            6 |
+|    5 | New Monitor     |   240 |            1 |
+|    6 | DVD drive       |   180 |            2 |
+|    7 | CD drive        |    90 |            2 |
+|    8 | Printer         |   270 |            3 |
+|    9 | Toner cartridge |    66 |            3 |
+|   10 | DVD burner      |   180 |            2 |
+|   11 | usb drive       |   200 |         NULL |
+|   13 | iphone X        |     0 |         NULL |
+|   14 | windows         |     0 |         NULL |
+|   15 | ipod            |     0 |         NULL |
+|   16 | Apple TV        |   360 |            1 |
++------+-----------------+-------+--------------+
+16 rows in set (0.08 sec)
+
+Query OK, 0 rows affected (0.27 sec)
+
+MariaDB [mytestdb]> demlimiter//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'demlimiter' at line 1
+MariaDB [mytestdb]> delimiter //
+MariaDB [mytestdb]> CREATE PROCEDURE sp_second(mid INT (10))
+    -> BEGIN
+    -> SELECT * FROM products WHERE manufacturue=mid;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.06 sec)
+MariaDB [mytestdb]> select * from products;
+    -> //
++------+-----------------+-------+--------------+
+| Code | Name            | Price | Manufacturer |
++------+-----------------+-------+--------------+
+|    0 | i phone 7s      |     0 |         NULL |
+|    1 | Hard drive      |   240 |            5 |
+|    2 | Memory          |   120 |            6 |
+|    3 | ZIP drive       |   150 |            4 |
+|    4 | Floppy disk     |     5 |            6 |
+|    5 | New Monitor     |   240 |            1 |
+|    6 | DVD drive       |   180 |            2 |
+|    7 | CD drive        |    90 |            2 |
+|    8 | Printer         |   270 |            3 |
+|    9 | Toner cartridge |    66 |            3 |
+|   10 | DVD burner      |   180 |            2 |
+|   11 | usb drive       |   200 |         NULL |
+|   13 | iphone X        |     0 |         NULL |
+|   14 | windows         |     0 |         NULL |
+|   15 | ipod            |     0 |         NULL |
+|   16 | Apple TV        |   360 |            1 |
++------+-----------------+-------+--------------+
+16 rows in set (0.00 sec)
+MariaDB [mytestdb]> delimiter //
+MariaDB [mytestdb]> CREATE PROCEDURE sp_second(mid INT (10))
+    -> BEGIN
+    -> SELECT * FROM products WHERE manufacturer=mid;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.08 sec)
+
+MariaDB [mytestdb]> CALL sp_second(1);
+    -> //
++------+-------------+-------+--------------+
+| Code | Name        | Price | Manufacturer |
++------+-------------+-------+--------------+
+|    5 | New Monitor |   240 |            1 |
+|   16 | Apple TV    |   360 |            1 |
++------+-------------+-------+--------------+
+2 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+MariaDB [mytestdb]> CALL sp_second(1)
+    -> //
++------+-------------+-------+--------------+
+| Code | Name        | Price | Manufacturer |
++------+-------------+-------+--------------+
+|    5 | New Monitor |   240 |            1 |
+|   16 | Apple TV    |   360 |            1 |
++------+-------------+-------+--------------+
+2 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+MariaDB [mytestdb]> CREATE OR REPLACE PROCEDURE sp_second(mid INT(10))
+    -> BEGIN
+    -> SELECT @mName:=name FROM manufacturers WHERE code=mid;
+    -> SELECT code,Name,price,@mName AS manufacturer FROM products WHERE manufacturer=mid;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.10 sec)
+
+MariaDB [mytestdb]> CALL sp_second();
+    -> //
+ERROR 1318 (42000): Incorrect number of arguments for PROCEDURE mytestdb.sp_second; expected 1, got 0
+MariaDB [mytestdb]> CALL sp_second(1);
+    -> //
++--------------+
+| @mName:=name |
++--------------+
+| Sony         |
++--------------+
+1 row in set (0.00 sec)
+
++------+-------------+-------+--------------+
+| code | Name        | price | manufacturer |
++------+-------------+-------+--------------+
+|    5 | New Monitor |   240 | Sony         |
+|   16 | Apple TV    |   360 | Sony         |
++------+-------------+-------+--------------+
+2 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.03 sec)
+MariaDB [mytestdb]> CREATE OR REPLACE PROCEDURE sp_sum(IN n INT, OUT sum INT)
+    -> BEGIN
+    -> SET @total=0;
+    -> SET @i=1;
+    -> WHILE(@i<=n)
+    -> DO
+    -> SET @total=@total+@i;
+    -> SET@i=@i+1;
+    -> END WHILE;
+    -> SELECT @sum=@total;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.11 sec)
+MariaDB [mytestdb]> SELECT @X;
+    -> //
++------+
+| @X   |
++------+
+| NULL |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [mytestdb]> CALL sp_sum(5,@x);
+    -> //
++-------------+
+| @sum=@total |
++-------------+
+|        NULL |
++-------------+
+1 row in set (0.03 sec)
+
+Query OK, 0 rows affected (0.04 sec)
+
+MariaDB [mytestdb]> CALL sp_sum(10,@x);
+    -> //
++-------------+
+| @sum=@total |
++-------------+
+|        NULL |
++-------------+
+1 row in set (0.00 sec)
+MariaDB [mytestdb]> CREATE OR REPLACE PROCEDURE sp2 ()BEGIN  DECLARE xName VARCHAR(25) DEFAULT 'None';  DECLARE xPrice DECIMAL(10,0);  DECLARE xCode INT;  DECLARE done TINYINT DEFAULT 0;  DECLARE cur1 CURSOR FOR SELECT code, name, price FROM PRODUCTS;  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;  OPEN cur1;  read_loop: LOOP    FETCH FROM cur1 INTO xcode, xname, xprice;    IF done THEN LEAVE read_loop; END IF;    SELECT xcode, xname, xprice;  END LOOP;  CLOSE cur1;END;
+    -> //
+Query OK, 0 rows affected (0.11 sec)
+
+MariaDB [mytestdb]> CALL sp2();
+    -> //
++-------+------------+--------+
+| xcode | xname      | xprice |
++-------+------------+--------+
+|     0 | i phone 7s |      0 |
++-------+------------+--------+
+1 row in set (0.04 sec)
+
++-------+------------+--------+
+| xcode | xname      | xprice |
++-------+------------+--------+
+|     1 | Hard drive |    240 |
++-------+------------+--------+
+1 row in set (0.05 sec)
+
++-------+--------+--------+
+| xcode | xname  | xprice |
++-------+--------+--------+
+|     2 | Memory |    120 |
++-------+--------+--------+
+1 row in set (0.06 sec)
+
++-------+-----------+--------+
+| xcode | xname     | xprice |
++-------+-----------+--------+
+|     3 | ZIP drive |    150 |
++-------+-----------+--------+
+1 row in set (0.07 sec)
+
++-------+-------------+--------+
+| xcode | xname       | xprice |
++-------+-------------+--------+
+|     4 | Floppy disk |      5 |
++-------+-------------+--------+
+1 row in set (0.07 sec)
+
++-------+-------------+--------+
+| xcode | xname       | xprice |
++-------+-------------+--------+
+|     5 | New Monitor |    240 |
++-------+-------------+--------+
+1 row in set (0.07 sec)
+
++-------+-----------+--------+
+| xcode | xname     | xprice |
++-------+-----------+--------+
+|     6 | DVD drive |    180 |
++-------+-----------+--------+
+1 row in set (0.09 sec)
+
++-------+----------+--------+
+| xcode | xname    | xprice |
++-------+----------+--------+
+|     7 | CD drive |     90 |
++-------+----------+--------+
+1 row in set (0.11 sec)
+
++-------+---------+--------+
+| xcode | xname   | xprice |
++-------+---------+--------+
+|     8 | Printer |    270 |
++-------+---------+--------+
+1 row in set (0.11 sec)
+
++-------+-----------------+--------+
+| xcode | xname           | xprice |
++-------+-----------------+--------+
+|     9 | Toner cartridge |     66 |
++-------+-----------------+--------+
+1 row in set (0.13 sec)
+
++-------+------------+--------+
+| xcode | xname      | xprice |
++-------+------------+--------+
+|    10 | DVD burner |    180 |
++-------+------------+--------+
+1 row in set (0.13 sec)
+
++-------+-----------+--------+
+| xcode | xname     | xprice |
++-------+-----------+--------+
+|    11 | usb drive |    200 |
++-------+-----------+--------+
+1 row in set (0.13 sec)
+
++-------+----------+--------+
+| xcode | xname    | xprice |
++-------+----------+--------+
+|    13 | iphone X |      0 |
++-------+----------+--------+
+1 row in set (0.15 sec)
+
++-------+---------+--------+
+| xcode | xname   | xprice |
++-------+---------+--------+
+|    14 | windows |      0 |
++-------+---------+--------+
+1 row in set (0.17 sec)
+
++-------+-------+--------+
+| xcode | xname | xprice |
++-------+-------+--------+
+|    15 | ipod  |      0 |
++-------+-------+--------+
+1 row in set (0.17 sec)
+
++-------+----------+--------+
+| xcode | xname    | xprice |
++-------+----------+--------+
+|    16 | Apple TV |    360 |
++-------+----------+--------+
+1 row in set (0.18 sec)
+
+Query OK, 0 rows affected (0.20 sec)
+
+MariaDB [mytestdb]> CREATE OR REPLACE PROCEDURE sp3 ()BEGIN  DECLARE pName VARCHAR(25) DEFAULT 'None';  DECLARE mName VARCHAR(25) DEFAULT 'None';  DECLARE pPrice DECIMAL(10,0);  DECLARE pCode INT;  DECLARE mCode INT;  DECLARE done TINYINT DEFAULT 0;  DECLARE cur1 CURSOR FOR SELECT * FROM manufacturers;  DECLARE cur2 CURSOR FOR SELECT code, name, price FROM PRODUCTS WHERE manufacturer = mcode;  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;  OPEN cur1;  manufacturers_loop: LOOP    FETCH FROM cur1 INTO mcode, mname;    IF done THEN LEAVE manufacturers_loop; END IF;    SELECT mcode, mname;    OPEN cur2;    product_loop: LOOP      FETCH FROM cur2 INTO pcode, pname, pprice;      IF done THEN LEAVE product_loop; END IF;      SELECT mcode, mname, pcode, pname, pprice;    END LOOP;    CLOSE cur2;  END LOOP;  CLOSE cur1;END;
+    -> //
+Query OK, 0 rows affected (0.09 sec)
+
+MariaDB [mytestdb]> CALL sp3();
+    -> //
++-------+-------+
+| mcode | mname |
++-------+-------+
+|     1 | Sony  |
++-------+-------+
+1 row in set (0.00 sec)
+
++-------+-------+-------+-------------+--------+
+| mcode | mname | pcode | pname       | pprice |
++-------+-------+-------+-------------+--------+
+|     1 | Sony  |     5 | New Monitor |    240 |
++-------+-------+-------+-------------+--------+
+1 row in set (0.02 sec)
+
++-------+-------+-------+----------+--------+
+| mcode | mname | pcode | pname    | pprice |
++-------+-------+-------+----------+--------+
+|     1 | Sony  |    16 | Apple TV |    360 |
++-------+-------+-------+----------+--------+
+1 row in set (0.02 sec)
+
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [mytestdb]> CREATE PROCEDURE sp4 (mcode INT, mname VARCHAR(25))BEGIN  DECLARE pName VARCHAR(25) DEFAULT 'None';  DECLARE pPrice DECIMAL(10,0);  DECLARE pCode INT;  DECLARE done TINYINT DEFAULT 0;  DECLARE cur1 CURSOR FOR SELECT code, name, price FROM PRODUCTS WHERE manufacturer = mcode;  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;  OPEN cur1;  product_loop: LOOP    FETCH FROM cur1 INTO pcode, pname, pprice;    IF done THEN LEAVE product_loop; END IF;    SELECT mcode, mname, pcode, pname, pprice;  END LOOP;  CLOSE cur1;END;
+    -> //
+Query OK, 0 rows affected (0.09 sec)
